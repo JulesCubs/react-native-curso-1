@@ -1,5 +1,5 @@
-import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Animated, Image, StyleSheet, Text, View } from "react-native";
 
 const GameCard = ({ game }) => {
   return (
@@ -12,7 +12,37 @@ const GameCard = ({ game }) => {
   );
 };
 
-export default GameCard;
+const AnimatedGameCard = ({ game, index }) => {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 1000,
+      delay: index * 250,
+      useNativeDriver: true,
+    }).start();
+  }, [opacity, index]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.card,
+        {
+          opacity: opacity.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+          }),
+        },
+      ]}
+      key={game.slug}
+    >
+      <GameCard game={game} />
+    </Animated.View>
+  );
+};
+
+export default AnimatedGameCard;
 
 const styles = StyleSheet.create({
   safeAreaView: {
